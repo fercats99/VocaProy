@@ -1,7 +1,7 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+import React from "react";
+import ReactDOM from "react-dom";
 
-function Example() {
+function LandingPage() {
     return (
         <div className="container">
             <div className="row justify-content-center">
@@ -9,7 +9,9 @@ function Example() {
                     <div className="card">
                         <div className="card-header">Example Component</div>
 
-                        <div className="card-body">I'm an example component!</div>
+                        <div className="card-body">
+                            I'm an example component!
+                        </div>
                     </div>
                 </div>
             </div>
@@ -17,8 +19,8 @@ function Example() {
     );
 }
 
-export default Example;
+export default LandingPage;
 
-if (document.getElementById('example')) {
-    ReactDOM.render(<Example />, document.getElementById('example'));
+if (document.getElementById("app")) {
+    ReactDOM.render(<LandingPage />, document.getElementById("app"));
 }
