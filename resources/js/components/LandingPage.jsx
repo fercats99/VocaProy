@@ -1,19 +1,24 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
+import { dummyQuestions } from "../utils/dummyQuestions";
+import PaginatedItems from "./Pagination/Pagination";
 
 function LandingPage() {
+    const [questions, setQuestions] = useState([]);
+    const [questionsWithAnswers, setQuestionsWithAnswers] = useState([]);
+    useEffect(() => {
+        setQuestions(dummyQuestions);
+        setQuestionsWithAnswers(dummyQuestions);
+    }, [dummyQuestions]);
+
     return (
         <div className="container">
             <div className="row justify-content-center">
-                <div className="col-md-8">
-                    <div className="card">
-                        <div className="card-header">Example Component</div>
-
-                        <div className="card-body">
-                            I'm an example component!
-                        </div>
-                    </div>
-                </div>
+                <PaginatedItems
+                    itemsPerPage={3}
+                    data={questions}
+                    setQuestions={setQuestions}
+                />
             </div>
         </div>
     );
