@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
-Route::get('/react', function () {
+Route::get('/landing_page', function () {
     return view('colaboracion');
 });
 
