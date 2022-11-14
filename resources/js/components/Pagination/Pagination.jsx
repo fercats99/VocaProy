@@ -1,55 +1,57 @@
 import React, { useEffect, useState } from "react";
 
 import ReactPaginate from "react-paginate";
-import "./Paginate.css";
+import "./Paginate.scss";
 // Example items, to simulate fetching from another resources.
 
 const Items = ({ currentItems, setQuestions }) => {
     const handleClick = (e, id, value) => {
         console.log(e.target, id, value);
-        setQuestions((prev) => {
+        /*   setQuestions((prev) => {
             prev = prev.map((item) => {
                 if (item.id === id) {
                     item.answerSelected = value;
                 }
                 return item;
             });
-        });
+        }); */
     };
     return (
         <>
             {currentItems &&
                 currentItems.map((item, idx) => (
-                    <div key={idx}>
+                    <div className="container_question" key={idx}>
                         <h3>{item.question}</h3>
                         {/* answers options */}
                         <div className="row">
                             <div className="col-md-6">
                                 <div className="form-check">
                                     {item.answers.map((answer) => (
-                                        <div>
-                                            <input
-                                                onChange={(e) =>
-                                                    handleClick(
-                                                        e,
-                                                        item.id,
-                                                        answer.id
-                                                    )
-                                                }
-                                                value={
-                                                    answer.id ===
-                                                    item.answerSelected
-                                                }
-                                                className="form-check-input"
-                                                type="radio"
-                                                name={`flexRadioDefault${item.id}`}
-                                                id={`flexRadioDefault${item.id}`}
-                                            />
+                                        <div className="container_question__option">
                                             <label
-                                                className="form-check-label"
+                                                className="container_check"
                                                 htmlFor={`flexRadioDefault${item.id}`}
                                             >
                                                 {answer.answer}
+                                                <input
+                                                    type="radio"
+                                                    checked="checked"
+                                                    name={`flexRadioDefault${item.id}`}
+                                                    onChange={(e) =>
+                                                        handleClick(
+                                                            e,
+                                                            item.id,
+                                                            answer.id
+                                                        )
+                                                    }
+                                                    value={
+                                                        answer.id ===
+                                                        item.answerSelected
+                                                    }
+                                                    id={`flexRadioDefault${item.id}`}
+                                                />
+
+                                                <span class="checkmark"></span>
                                             </label>
                                         </div>
                                     ))}
