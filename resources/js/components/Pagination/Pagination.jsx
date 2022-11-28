@@ -7,14 +7,14 @@ import "./Paginate.scss";
 const Items = ({ currentItems, setQuestions }) => {
     const handleClick = (e, id, value) => {
         console.log(e.target, id, value);
-        /*   setQuestions((prev) => {
+        setQuestions((prev) => {
             prev = prev.map((item) => {
                 if (item.id === id) {
                     item.answerSelected = value;
                 }
                 return item;
             });
-        }); */
+        });
     };
     return (
         <>
