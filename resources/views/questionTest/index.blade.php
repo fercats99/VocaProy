@@ -17,19 +17,19 @@ con el controlador QuestionProcessing --}}
     <form action="/questionProcessing" method="POST">
         @csrf
         <ol>
-            @foreach ($route as $item)
+            @foreach ($aptitudes as $item)
                 <div>
                     <label>
                         <li>{{ $item->pregunta }}</li>
                     </label>
                     <br>
                     <label for="mucho">Mucho</label>
-                    <input type="radio" checked class="radio" name="Q{{ $item->id }}" id=""
+                    <input type="radio" checked class="radio" name="QApt{{ $item->id }}" id=""
                         value="2">
                     <label for="mucho">Poco</label>
-                    <input type="radio" class="radio" name="Q{{ $item->id }}" id="" value="1">
+                    <input type="radio" class="radio" name="QApt{{ $item->id }}" id="" value="1">
                     <label for="mucho">Nada</label>
-                    <input type="radio" class="radio" name="Q{{ $item->id }}" id="" value="0">
+                    <input type="radio" class="radio" name="QApt{{ $item->id }}" id="" value="0">
                 </div>
             @endforeach
         </ol>

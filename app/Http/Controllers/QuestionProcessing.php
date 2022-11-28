@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Carrera;
+use App\Models\QuestionEnvironment;
+use App\Models\QuestionIntelligence;
 use App\Models\QuestionRoute;
 use Illuminate\Http\Request;
 
@@ -16,7 +18,9 @@ class QuestionProcessing extends Controller
     public function index()
     {
         $route = QuestionRoute::All();
-        return view('questionTest.index', compact('route'));
+        $ambLaboral = QuestionEnvironment::all();
+        $aptitudes = QuestionIntelligence::all();
+        return view('questionTest.index', compact('aptitudes'));
     }
 
     /**
@@ -37,47 +41,38 @@ class QuestionProcessing extends Controller
      */
     public function store(Request $request)
     {
-
-        $realista = self::tipo($request, 're');
-        $cientifico = self::tipo($request, 'ci');
-        $convencional = self::tipo($request, 'co');
-        $artistico = self::tipo($request, 'ar');
-        $social = self::tipo($request, 'so');
-        $emprendedor = self::tipo($request, 'em');
-        $rutas = [
-            'realista' => $realista, 'cientifico' => $cientifico,
-            'convencional' => $convencional, 'artistico' => $artistico,
-            'social' => $social, 'emprendedor' => $emprendedor
+        $personalidades = [
+            'realista' => self::puntajePersonalidad($request, 're'),
+            'cientifico' => self::puntajePersonalidad($request, 'ci'),
+            'convencional' => self::puntajePersonalidad($request, 'co'),
+            'artistico' => self::puntajePersonalidad($request, 'ar'),
+            'social' => self::puntajePersonalidad($request, 'so'),
+            'emprendedor' => self::puntajePersonalidad($request, 'em')
         ];
-        // Ordena de mayor a menor el arreglo
-        arsort($rutas);
+        $aptitudes = [
+            'corporalCinestesica' => self::puntajeAptitudes($request, 'cor'),
+            'logico-matematica' => self::puntajeAptitudes($request, 'log'),
+            'viso-espacial' => self::puntajeAptitudes($request, 'vis'),
+            'musical' => self::puntajeAptitudes($request, 'mus'),
+            'linguistica' => self::puntajeAptitudes($request, 'lin'),
+            'interpersonal' => self::puntajeAptitudes($request, 'inter'),
+            'intrapersonal' => self::puntajeAptitudes($request, 'intra'),
+            'naturalista' => self::puntajeAptitudes($request, 'nat'),
+        ];
+        // Busca las tres mayores personalidades basadas en los puntos
+        // Si hay un empate retoma todas las que empaten, por lo que pueden ser no solo tres
+        dd($aptitudes);
+        $aptitudes = self::mayorAptitud($aptitudes);
+        $personalidades = self::mayorPersonalidad($personalidades);
 
-        // Usamos el bucle para saber si hay valores iguales después del 3 valor
-        // para saber los tipos de personalidad que usaremos
-        // Según el test deben ser los primeros 3, y en este caso contemplamos que existan
-        // tipos de personalidad que puedan empatar con la 3 personalidad
-        $numPersonalidades = 2;
-        while ($numPersonalidades < count($rutas)) {
-            if (array_values($rutas)[$numPersonalidades] < array_values($rutas)[$numPersonalidades - 1]) {
-                print(array_keys($rutas)[$numPersonalidades]);
-                break;
-            }
-            $numPersonalidades++;
+        if ($personalidades) {
+            return redirect('/home');
         }
-        $tipoPersonalidad = [];
-        for ($i = 0; $i < $numPersonalidades; $i++) {
-            $tipo = array_keys($rutas)[$i];
-            array_push($tipoPersonalidad, $tipo);
-            print($tipoPersonalidad[$i]);
-        }
-        $personalidad = ['cientifico', 'artistico', 'realista'];
+        $personalidades = ['cientifico', 'artistico', 'realista'];
         $ambienteLaboral = ['cientifico', 'realista', 'convencional'];
-        $aptitud = ['naturalista', 'logico-matematica', 'viso-espacial'];
-        $carrera = Carrera::whereIn('personalidad1', $personalidad)->WhereIn('personalidad2', $personalidad)->WhereIn('personalidad3', $personalidad)->get();
-        $carrera = $carrera->whereIn('ambienteLaboral1', $ambienteLaboral)->whereIn('ambienteLaboral2', $ambienteLaboral)->whereIn('ambienteLaboral3', $ambienteLaboral);
-        $carrera = $carrera->WhereIn('aptitud1', $aptitud)->WhereIn('aptitud2', $aptitud)->WhereIn('aptitud3', $aptitud);
+        // $aptitudes = ['naturalista', 'logico-matematica', 'viso-espacial'];
+        $carrera = self::buscarCarrera($personalidades, $ambienteLaboral, $aptitudes);
         dd($carrera);
-        dd(array_values($rutas)[0]);
     }
 
     /**
@@ -124,9 +119,11 @@ class QuestionProcessing extends Controller
     {
         //
     }
-    public function tipo($request, $tipo)
+    // .................................................................
+    // Obtener los puntajes de cada area
+    // .................................................................
+    public function puntajePersonalidad($request, $tipo)
     {
-        $i = 0;
 
         //re = relistico
         //ci = cientifico
@@ -135,6 +132,7 @@ class QuestionProcessing extends Controller
         //so = social
         //em = emprendedor
 
+        $i = 0;
         if ($tipo == 're') {
             $i = 1;
         } elseif ($tipo == 'ci') {
@@ -147,24 +145,131 @@ class QuestionProcessing extends Controller
             $i = 5;
         } elseif ($tipo == 'em') {
             $i = 6;
+        } else {
+            return null;
         }
 
         $suma = 0;
         while ($i <= 96) {
-            $questionNumber = "Q" . strval($i);
+            $questionNumber = "QPer" . strval($i);
             $suma += $request->$questionNumber;
             $i += 6;
         }
         return $suma;
     }
-
-    public function cientifico($request)
+    public function puntajeAptitudes($request, $tipo)
     {
+        // Inteligencias multiples
+        // corp = corporal-cinestésica
+        // log = lógico-matemática
+        // vis = viso-espacial
+        // mus = musical
+        // lin = linguistica
+        // inter = interpersonal
+        // intra = intrapersonal
+        // nat = naturalista
+        $i = 0;
+        if ($tipo == 'cor') {
+            $i = 1;
+        } elseif ($tipo == 'log') {
+            $i = 2;
+        } elseif ($tipo == 'vis') {
+            $i = 3;
+        } elseif ($tipo == 'mus') {
+            $i = 4;
+        } elseif ($tipo == 'lin') {
+            $i = 5;
+        } elseif ($tipo == 'inter') {
+            $i = 6;
+        } elseif ($tipo == 'intra') {
+            $i = 7;
+        } elseif ($tipo == 'nat') {
+            $i = 8;
+        } else {
+            return null;
+        }
         $suma = 0;
-        for ($i = 2; $i <= 96; $i += 6) {
-            $questionNumber = "Q" . strval($i);
+        while ($i <= 64) {
+
+            $questionNumber = "QApt" . strval($i);
             $suma += $request->$questionNumber;
+            if ($tipo == 'nat') {
+                print($request->$questionNumber . '/............\n');
+            }
+            $i += 8;
         }
         return $suma;
+    }
+    // .................................................................
+    // Buscar mayores valores para cada area
+    // .................................................................
+    public function mayorPersonalidad($personalidades)
+    {
+        // Ordena de mayor a menor el arreglo
+        arsort($personalidades);
+        // Usamos el bucle para saber si hay valores iguales después del tercer valor
+        // para saber los tipos de personalidad que usaremos
+        // Según el test deben ser los primeros 3, y en este caso contemplamos que existan
+        // tipos de personalidad que puedan empatar con la tercer personalidad ejemplo:
+        // personalidad1 = 32 puntos, personalidad2 = 30 puntos, personalidad3 = 30 puntos,
+        // personalidad4 = 30 puntos, personalidad5 = 28 puntos
+        // Podemos observar que en este caso debemos buscar las primeras 4 personalidades.
+
+        $numPer = 2;
+        while ($numPer < count($personalidades)) {
+            if (array_values($personalidades)[$numPer] < array_values($personalidades)[$numPer - 1]) {
+                break;
+            }
+            $numPer++;
+            if ($numPer == count($personalidades)) {
+                return null;
+            }
+        }
+        $maxPersonalidad = [];
+        for ($i = 0; $i < $numPer; $i++) {
+            $tipo = array_keys($personalidades)[$i];
+            array_push($maxPersonalidad, $tipo);
+        }
+        return $maxPersonalidad;
+    }
+    public function mayorAptitud($aptitudes)
+    {
+        // Ordena de mayor a menor el arreglo
+        arsort($aptitudes);
+        // Usamos el bucle para saber si hay valores iguales después del tercer valor
+        // para saber los tipos de personalidad que usaremos
+        // Según el test deben ser los primeros 3, y en este caso contemplamos que existan
+        // tipos de personalidad que puedan empatar con la tercer personalidad ejemplo:
+        // personalidad1 = 32 puntos, personalidad2 = 30 puntos, personalidad3 = 30 puntos,
+        // personalidad4 = 30 puntos, personalidad5 = 28 puntos
+        // Podemos observar que en este caso debemos buscar las primeras 4 personalidades.
+
+        $numPer = 2;
+        while ($numPer < count($aptitudes)) {
+            if (array_values($aptitudes)[$numPer] < array_values($aptitudes)[$numPer - 1]) {
+                break;
+            }
+            $numPer++;
+            if ($numPer == count($aptitudes)) {
+                print('nulo');
+                return null;
+            }
+        }
+        $maxPersonalidad = [];
+        for ($i = 0; $i < $numPer; $i++) {
+            $tipo = array_keys($aptitudes)[$i];
+            array_push($maxPersonalidad, $tipo);
+        }
+        return $maxPersonalidad;
+    }
+    // .................................................................
+    //Buscar carrera
+    // .................................................................
+    public function buscarCarrera($per, $ambLaboral, $apt)
+    {
+        $carrera = Carrera::whereIn('personalidad1', $per)->WhereIn('personalidad2', $per)->WhereIn('personalidad3', $per)->get();
+        $carrera = $carrera->whereIn('ambienteLaboral1', $ambLaboral)->whereIn('ambienteLaboral2', $ambLaboral)->whereIn('ambienteLaboral3', $ambLaboral);
+        $carrera = $carrera->WhereIn('aptitud1', $apt)->WhereIn('aptitud2', $apt)->WhereIn('aptitud3', $apt);
+        return $carrera;
     }
 }
