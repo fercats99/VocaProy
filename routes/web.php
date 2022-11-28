@@ -20,8 +20,17 @@ Route::get('/', function () {
 Route::get('/landing_page', function () {
     return view('colaboracion');
 });
+//................................................................................
+//Pruebas Inicio
+// Eliminar al finalizar
+//................................................................................
 Route::resource('questionProcessing', QuestionProcessing::class);
-
+Route::get('/resultado', function () {
+    return view('questionTest.indexResultados');
+});
+//................................................................................
+//Pruebas Fin
+//................................................................................
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
