@@ -23,5 +23,6 @@ class DatabaseSeeder extends Seeder
         $this->call(QuestionRouteSeeder::class);
         $this->call(QuestionIntelligenceSeeder::class);
         $this->call(QuestionEnvironmentSeeder::class);
+        $this->call(CarreraSeeder::class);
     }
 }

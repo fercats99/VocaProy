@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\QuestionProcessing;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -19,6 +20,7 @@ Route::get('/', function () {
 Route::get('/landing_page', function () {
     return view('colaboracion');
 });
+Route::resource('questionProcessing', QuestionProcessing::class);
 
 Route::middleware([
     'auth:sanctum',
