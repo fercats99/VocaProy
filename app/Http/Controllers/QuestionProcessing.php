@@ -53,10 +53,6 @@ class QuestionProcessing extends Controller
         //     $mensaje = true;
         //     return redirect('/resultado')->with(compact('mensaje'));
         // }
-
-        $personalidades = ['cientifico', 'artistico', 'realista'];
-        // $ambLaboral = ['cientifico', 'realista', 'convencional'];
-        $aptitudes = ['naturalista', 'logico-matematica', 'viso-espacial'];
         $carreras = self::buscarCarrera($personalidades, $ambLaboral, $aptitudes);
         return redirect('/resultado')->with(compact('carreras'));
     }
@@ -137,7 +133,7 @@ class QuestionProcessing extends Controller
                 'convencional' => self::puntajeAmbLaboral($request, 'con'),
                 'artistico' => self::puntajeAmbLaboral($request, 'art'),
                 'social' => self::puntajeAmbLaboral($request, 'soc'),
-                'empresarial' => self::puntajeAmbLaboral($request, 'emp'),
+                'emprendedor' => self::puntajeAmbLaboral($request, 'emp'),
             ];
         } else {
             return null;
@@ -228,7 +224,7 @@ class QuestionProcessing extends Controller
         // con = Convencional
         // art = Artistico
         // soc = social
-        // emp = empresarial
+        // emp = emprendedor
         $i = 0;
         if ($tipo == 'rea') {
             $i = 1;
@@ -342,6 +338,7 @@ class QuestionProcessing extends Controller
             $tipo = array_keys($ambLaboral)[$i];
             array_push($maxAmb, $tipo);
         }
+
         return $maxAmb;
     }
     // .................................................................
@@ -350,7 +347,7 @@ class QuestionProcessing extends Controller
     public function buscarCarrera($per, $ambLaboral, $apt)
     {
         $carrera = Carrera::whereIn('personalidad1', $per)->WhereIn('personalidad2', $per)->WhereIn('personalidad3', $per)->get();
-        $carrera = $carrera->whereIn('ambienteLaboral1', $ambLaboral)->whereIn('ambienteLaboral2', $ambLaboral)->whereIn('ambienteLaboral3', $ambLaboral);
+        $carrera = $carrera->whereIn('ambienteLaboral1', $ambLaboral)->whereIn('ambienteLaboral3', $ambLaboral)->WhereIn('ambienteLaboral2', $ambLaboral);
         $carrera = $carrera->WhereIn('aptitud1', $apt)->WhereIn('aptitud2', $apt)->WhereIn('aptitud3', $apt);
         return $carrera;
     }

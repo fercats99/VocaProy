@@ -12,7 +12,7 @@ class Carrera extends Model
 
     protected $fillable = [
         'nombre',
-        'ambientelaboral1',
+        'ambienteLaboral1',
         'ambienteLaboral2',
         'ambienteLaboral3',
         'personalidad1',
