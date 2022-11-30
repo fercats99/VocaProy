@@ -7,12 +7,15 @@ import Stack from "@mui/material/Stack";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import Questions from "./Questions";
+import { InertiaLink, usePage } from "@inertiajs/inertia-react";
 
 function LandingPage() {
     const totalQuestionsPerPage = 5;
     const [questions, setQuestions] = useState([]);
     const [questionsWithAnswers, setQuestionsWithAnswers] = useState([]);
     const [pageNumber, setPage] = useState(0);
+    const { posts } = usePage().props;
+
     const [totalPagination, setTotalPagination] = useState(
         Math.ceil(dummyQuestions.length / totalQuestionsPerPage)
     );

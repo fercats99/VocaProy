@@ -15,14 +15,14 @@ const Questions = ({
     const handleClick = (e, id, value) => {
         e.preventDefault();
         console.log(e.target, id, value);
-        setQuestions((prev) => {
-            prev = prev.map((item) => {
+        setQuestions((prev) =>
+            prev.map((item) => {
                 if (item.id === id) {
                     item.answerSelected = value;
                 }
                 return item;
-            });
-        });
+            })
+        );
     };
 
     return (
@@ -30,7 +30,44 @@ const Questions = ({
             {questions && (
                 <>
                     {questions.map((item, idx) => {
-                        if (pagination == 1 && idx < (pagination + 1) * 5) {
+                        if (pagination == 1 && idx < pagination * 5) {
+                            return (
+                                <>
+                                    <FormLabel id={`radio-label-${item.id}`}>
+                                        {item.question}
+                                    </FormLabel>
+                                    <RadioGroup
+                                        aria-labelledby={`radio-label-${item.id}`}
+                                        name={`radio-${item.id}`}
+                                    >
+                                        {item.answers.map((answer) => (
+                                            <FormControlLabel
+                                                checked={
+                                                    item.answerSelected ===
+                                                    answer.id
+                                                        ? true
+                                                        : false
+                                                }
+                                                value={answer.id}
+                                                control={<Radio />}
+                                                label={answer.answer}
+                                                onClick={(e) =>
+                                                    handleClick(
+                                                        e,
+                                                        item.id,
+                                                        answer.id
+                                                    )
+                                                }
+                                            />
+                                        ))}
+                                    </RadioGroup>
+                                </>
+                            );
+                        } else if (
+                            pagination > 1 &&
+                            idx < (pagination + 1) * 5 &&
+                            idx >= (pagination - 1) * 5
+                        ) {
                             return (
                                 <>
                                     <FormLabel id={`radio-label-${item.id}`}>
