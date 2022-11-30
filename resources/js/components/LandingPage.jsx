@@ -7,22 +7,20 @@ import Stack from "@mui/material/Stack";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import Questions from "./Questions";
+//import { InertiaLink, usePage } from "@inertiajs/inertia-react";
+import axios from "axios";
 
 function LandingPage() {
-    const totalQuestionsPerPage = 5;
+    const totalQuestionsPerPage = 3;
     const [questions, setQuestions] = useState([]);
     const [questionsWithAnswers, setQuestionsWithAnswers] = useState([]);
     const [pageNumber, setPage] = useState(0);
-    const [totalPagination, setTotalPagination] = useState(
-        Math.ceil(dummyQuestions.length / totalQuestionsPerPage)
-    );
+    // const { posts } = usePage().props;
+
+    const [totalPagination, setTotalPagination] = useState(0);
     useEffect(() => {
-        setQuestions(dummyQuestions);
-        setQuestionsWithAnswers(dummyQuestions);
-        setTotalPagination(
-            Math.ceil(dummyQuestions.length / totalQuestionsPerPage)
-        );
-    }, [dummyQuestions]);
+        gettinQuestions();
+    }, []);
 
     useEffect(() => {
         console.log(
@@ -32,15 +30,48 @@ function LandingPage() {
             dummyQuestions.length
         );
     }, [pageNumber]);
+    const gettinQuestions = async () => {
+        const response = await axios.get("/questionProcessing");
+
+        setTotalPagination(
+            Math.ceil(
+                (response.data.ambLaboral.length +
+                    response.data.ambLaboral.length +
+                    response.data.personalidades.length) /
+                    totalQuestionsPerPage
+            )
+        );
+        setQuestions(response.data);
+    };
 
     return (
         <div className="container">
             <div className="row justify-content-center">
                 <Questions
+                    prefix="QAmb"
+                    array={"ambLaboral"}
                     pagination={pageNumber}
                     totalPagination={totalPagination}
                     totalQuestionsPerPage={totalQuestionsPerPage}
-                    questions={questions}
+                    questions={questions.ambLaboral}
+                    setQuestions={setQuestions}
+                />
+                <Questions
+                    prefix="QApt"
+                    array={"aptitudes"}
+                    pagination={pageNumber}
+                    totalPagination={totalPagination}
+                    totalQuestionsPerPage={totalQuestionsPerPage}
+                    questions={questions.aptitudes}
+                    setQuestions={setQuestions}
+                />
+                <Questions
+                    prefix="QPer"
+                    array={"personalidades"}
+                    pagination={pageNumber}
+                    totalPagination={totalPagination}
+                    totalQuestionsPerPage={totalQuestionsPerPage}
+                    questions={questions.personalidades}
                     setQuestions={setQuestions}
                 />
                 <Pagination

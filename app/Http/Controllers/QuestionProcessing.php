@@ -22,7 +22,7 @@ class QuestionProcessing extends Controller
         $personalidades = QuestionRoute::All();
         $ambLaboral = QuestionEnvironment::all();
         $aptitudes = QuestionIntelligence::all();
-        return view('questionTest.index', compact('aptitudes', 'ambLaboral', 'personalidades'));
+        return  compact('aptitudes', 'ambLaboral', 'personalidades');
     }
 
     /**
