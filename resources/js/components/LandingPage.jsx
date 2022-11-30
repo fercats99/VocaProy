@@ -38,7 +38,7 @@ function LandingPage() {
                 (response.data.ambLaboral.length +
                     response.data.ambLaboral.length +
                     response.data.personalidades.length) /
-                    totalQuestionsPerPage
+                    10
             )
         );
         setQuestions(response.data);

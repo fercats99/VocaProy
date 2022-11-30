@@ -59,25 +59,71 @@ const Questions = ({
                             idx < pagination * totalQuestionsPerPage
                         ) {
                             return (
-                                <Question
-                                    handleClick={handleClick}
-                                    answers={answers}
-                                    prefix={prefix}
-                                    item={item}
-                                />
+                                <>
+                                    <FormLabel id={`radio-label-${item.id}`}>
+                                        {item.pregunta}
+                                    </FormLabel>
+                                    <RadioGroup
+                                        aria-labelledby={`radio-label-${item.id}`}
+                                        name={`radio-${item.id}`}
+                                    >
+                                        {answers.map((answer) => (
+                                            <FormControlLabel
+                                                checked={
+                                                    answer.id ===
+                                                    item.answerSelected
+                                                }
+                                                value={answer.id}
+                                                name={`${prefix}-${item.id}`}
+                                                control={<Radio />}
+                                                label={answer.answer}
+                                                onClick={(e) =>
+                                                    handleClick(
+                                                        e,
+                                                        item.id,
+                                                        answer.id
+                                                    )
+                                                }
+                                            />
+                                        ))}
+                                    </RadioGroup>
+                                </>
                             );
                         } else if (
                             pagination > 1 &&
                             idx < (pagination + 1) * totalQuestionsPerPage &&
-                            idx >= (pagination - 1) * totalQuestionsPerPage
+                            idx >= pagination * totalQuestionsPerPage
                         ) {
                             return (
-                                <Question
-                                    handleClick={handleClick}
-                                    answers={answers}
-                                    prefix={prefix}
-                                    item={item}
-                                />
+                                <>
+                                    <FormLabel id={`radio-label-${item.id}`}>
+                                        {item.pregunta}
+                                    </FormLabel>
+                                    <RadioGroup
+                                        aria-labelledby={`radio-label-${item.id}`}
+                                        name={`radio-${item.id}`}
+                                    >
+                                        {answers.map((answer) => (
+                                            <FormControlLabel
+                                                checked={
+                                                    answer.id ===
+                                                    item.answerSelected
+                                                }
+                                                value={answer.id}
+                                                name={`${prefix}-${item.id}`}
+                                                control={<Radio />}
+                                                label={answer.answer}
+                                                onClick={(e) =>
+                                                    handleClick(
+                                                        e,
+                                                        item.id,
+                                                        answer.id
+                                                    )
+                                                }
+                                            />
+                                        ))}
+                                    </RadioGroup>
+                                </>
                             );
                         }
                     })}
@@ -96,25 +142,6 @@ const Question = ({ handleClick, answers, prefix, item }) => {
         return false;
     };
 
-    return (
-        <>
-            <FormLabel id={`radio-label-${item.id}`}>{item.pregunta}</FormLabel>
-            <RadioGroup
-                aria-labelledby={`radio-label-${item.id}`}
-                name={`radio-${item.id}`}
-            >
-                {answers.map((answer) => (
-                    <FormControlLabel
-                        checked={isChecked(answer.id)}
-                        value={answer.id}
-                        name={`${prefix}-${item.id}`}
-                        control={<Radio />}
-                        label={answer.answer}
-                        onClick={(e) => handleClick(e, item.id, answer.id)}
-                    />
-                ))}
-            </RadioGroup>
-        </>
-    );
+    return null;
 };
 export default Questions;
