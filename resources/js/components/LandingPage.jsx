@@ -9,28 +9,21 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import Questions from "./Questions";
 //import { InertiaLink, usePage } from "@inertiajs/inertia-react";
 import axios from "axios";
+import Navbar from "./Navbar/Navbar";
+import useQuestions from "../utils/useQuestions";
 
 function LandingPage() {
     const totalQuestionsPerPage = 3;
-    const [questions, setQuestions] = useState([]);
+    const [questions, setQuestions] = useQuestions();
     const [questionsWithAnswers, setQuestionsWithAnswers] = useState([]);
     const [pageNumber, setPage] = useState(0);
-    // const { posts } = usePage().props;
-
     const [totalPagination, setTotalPagination] = useState(0);
     useEffect(() => {
-        gettinQuestions();
+        gettingQuestions();
     }, []);
 
-    useEffect(() => {
-        console.log(
-            "page actual",
-            pageNumber,
-            totalPagination,
-            dummyQuestions.length
-        );
-    }, [pageNumber]);
-    const gettinQuestions = async () => {
+    useEffect(() => {}, [pageNumber]);
+    const gettingQuestions = async () => {
         const response = await axios.get("/questionProcessing");
 
         setTotalPagination(
@@ -38,7 +31,7 @@ function LandingPage() {
                 (response.data.ambLaboral.length +
                     response.data.ambLaboral.length +
                     response.data.personalidades.length) /
-                    totalQuestionsPerPage
+                    10
             )
         );
         setQuestions(response.data);
@@ -46,52 +39,56 @@ function LandingPage() {
 
     return (
         <div className="container">
+            <Navbar />
             <div className="row justify-content-center">
-                <Questions
-                    prefix="QAmb"
-                    array={"ambLaboral"}
-                    pagination={pageNumber}
-                    totalPagination={totalPagination}
-                    totalQuestionsPerPage={totalQuestionsPerPage}
-                    questions={questions.ambLaboral}
-                    setQuestions={setQuestions}
-                />
-                <Questions
-                    prefix="QApt"
-                    array={"aptitudes"}
-                    pagination={pageNumber}
-                    totalPagination={totalPagination}
-                    totalQuestionsPerPage={totalQuestionsPerPage}
-                    questions={questions.aptitudes}
-                    setQuestions={setQuestions}
-                />
-                <Questions
-                    prefix="QPer"
-                    array={"personalidades"}
-                    pagination={pageNumber}
-                    totalPagination={totalPagination}
-                    totalQuestionsPerPage={totalQuestionsPerPage}
-                    questions={questions.personalidades}
-                    setQuestions={setQuestions}
-                />
-                <Pagination
-                    count={totalPagination}
-                    renderItem={(item) => {
-                        console.log(item);
-                        if (item.selected) {
-                            setPage(item.page);
-                        }
-                        return (
-                            <PaginationItem
-                                slots={{
-                                    previous: ArrowBackIcon,
-                                    next: ArrowForwardIcon,
-                                }}
-                                {...item}
-                            />
-                        );
-                    }}
-                />
+                <div className="questions">
+                    <Questions
+                        prefix="QAmb"
+                        array={"ambLaboral"}
+                        pagination={pageNumber}
+                        totalPagination={totalPagination}
+                        totalQuestionsPerPage={totalQuestionsPerPage}
+                        questions={questions.ambLaboral}
+                        setQuestions={setQuestions}
+                    />
+                    <Questions
+                        prefix="QApt"
+                        array={"aptitudes"}
+                        pagination={pageNumber}
+                        totalPagination={totalPagination}
+                        totalQuestionsPerPage={totalQuestionsPerPage}
+                        questions={questions.aptitudes}
+                        setQuestions={setQuestions}
+                    />
+                    <Questions
+                        prefix="QPer"
+                        array={"personalidades"}
+                        pagination={pageNumber}
+                        totalPagination={totalPagination}
+                        totalQuestionsPerPage={totalQuestionsPerPage}
+                        questions={questions.personalidades}
+                        setQuestions={setQuestions}
+                    />
+                </div>
+                <div className="pagination">
+                    <Pagination
+                        count={totalPagination}
+                        renderItem={(item) => {
+                            if (item.selected) {
+                                setPage(item.page);
+                            }
+                            return (
+                                <PaginationItem
+                                    slots={{
+                                        previous: ArrowBackIcon,
+                                        next: ArrowForwardIcon,
+                                    }}
+                                    {...item}
+                                />
+                            );
+                        }}
+                    />
+                </div>
             </div>
         </div>
     );
