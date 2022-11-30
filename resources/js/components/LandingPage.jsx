@@ -10,27 +10,19 @@ import Questions from "./Questions";
 //import { InertiaLink, usePage } from "@inertiajs/inertia-react";
 import axios from "axios";
 import Navbar from "./Navbar/Navbar";
+import useQuestions from "../utils/useQuestions";
 
 function LandingPage() {
     const totalQuestionsPerPage = 3;
-    const [questions, setQuestions] = useState([]);
+    const [questions, setQuestions] = useQuestions();
     const [questionsWithAnswers, setQuestionsWithAnswers] = useState([]);
     const [pageNumber, setPage] = useState(0);
-    // const { posts } = usePage().props;
-
     const [totalPagination, setTotalPagination] = useState(0);
     useEffect(() => {
         gettingQuestions();
     }, []);
 
-    useEffect(() => {
-        console.log(
-            "page actual",
-            pageNumber,
-            totalPagination,
-            dummyQuestions.length
-        );
-    }, [pageNumber]);
+    useEffect(() => {}, [pageNumber]);
     const gettingQuestions = async () => {
         const response = await axios.get("/questionProcessing");
 
@@ -82,7 +74,6 @@ function LandingPage() {
                     <Pagination
                         count={totalPagination}
                         renderItem={(item) => {
-                            console.log(item);
                             if (item.selected) {
                                 setPage(item.page);
                             }

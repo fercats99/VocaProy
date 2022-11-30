@@ -54,6 +54,7 @@ const Questions = ({
                 <>
                     {/* {handleDebugger()} */}
                     {questions.map((item, idx) => {
+                        console.log(item);
                         if (
                             pagination == 1 &&
                             idx < pagination * totalQuestionsPerPage
@@ -70,8 +71,11 @@ const Questions = ({
                                         {answers.map((answer) => (
                                             <FormControlLabel
                                                 checked={
-                                                    answer.id ===
-                                                    item.answerSelected
+                                                    item.answerSelected !==
+                                                    undefined
+                                                        ? item.answerSelected ==
+                                                          answer.value
+                                                        : false
                                                 }
                                                 value={answer.id}
                                                 name={`${prefix}-${item.id}`}
