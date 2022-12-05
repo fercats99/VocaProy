@@ -20,7 +20,9 @@ class QuestionProcessing extends Controller
         $personalidades = QuestionRoute::All();
         $ambLaboral = QuestionEnvironment::all();
         $aptitudes = QuestionIntelligence::all();
-        return  compact('aptitudes', 'ambLaboral', 'personalidades');
+return  compact('aptitudes', 'ambLaboral', 'personalidades');  
+         /* return view('questionTest.index', compact('aptitudes', 'ambLaboral', 'personalidades')); */
+
     }
 
     /**
@@ -44,7 +46,6 @@ class QuestionProcessing extends Controller
 
         // Busca las tres mayores personalidades basadas en los puntos
         // Si hay un empate retoma todas las que empaten, por lo que pueden ser no solo tres
-
         $aptitudes = self::mayorAptitud($request);
         $personalidades = self::mayorPersonalidad($request);
         $ambLaboral = self::mayorAmbLaboral($request);
@@ -54,7 +55,7 @@ class QuestionProcessing extends Controller
         //     return redirect('/resultado')->with(compact('mensaje'));
         // }
         $carreras = self::buscarCarrera($personalidades, $ambLaboral, $aptitudes);
-        return redirect('/resultado')->with(compact('carreras'));
+        return with(compact('carreras'));
     }
 
     /**

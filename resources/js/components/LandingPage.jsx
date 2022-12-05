@@ -11,18 +11,20 @@ import Questions from "./Questions";
 import axios from "axios";
 import Navbar from "./Navbar/Navbar";
 import useQuestions from "../utils/useQuestions";
+import { Button } from "@mui/material";
 
 function LandingPage() {
     const totalQuestionsPerPage = 3;
-    const [questions, setQuestions] = useQuestions();
+    const [questions, setQuestions, handleAnswerOptionClick] = useQuestions();
     const [questionsWithAnswers, setQuestionsWithAnswers] = useState([]);
     const [pageNumber, setPage] = useState(0);
     const [totalPagination, setTotalPagination] = useState(0);
     useEffect(() => {
         gettingQuestions();
     }, []);
-
-    useEffect(() => {}, [pageNumber]);
+    useEffect(() => {
+        console.log("pageNumber", pageNumber, "/", totalPagination);
+    }, [pageNumber]);
     const gettingQuestions = async () => {
         const response = await axios.get("/questionProcessing");
 
@@ -36,13 +38,35 @@ function LandingPage() {
         );
         setQuestions(response.data);
     };
-
+    const handleSubmit = async () => {
+        console.log("questions", questions);
+        const questionsMerged = [
+            ...questions.ambLaboral,
+            ...questions.aptitudes,
+            ...questions.personalidades,
+        ];
+        const questionsWithAnswers = {};
+        questionsMerged.forEach((item) => {
+            if (item.answerSelected) {
+                questionsWithAnswers[item.answerName] = item.answerSelected;
+            }
+        });
+        console.log("document.cookie", document.cookie.split("=")[1]);
+        //questionsWithAnswers["_token"] = document.cookie.split("=")[1];
+        console.log("questions", questionsWithAnswers);
+        const response = await axios.post(
+            "/questionProcessing",
+            questionsWithAnswers
+        );
+        console.log("response", response);
+    };
     return (
         <div className="container">
             <Navbar />
-            <div className="row justify-content-center">
+            <form className="row justify-content-center" action="POST">
                 <div className="questions">
                     <Questions
+                        key="ambLaboral"
                         prefix="QAmb"
                         array={"ambLaboral"}
                         pagination={pageNumber}
@@ -52,6 +76,7 @@ function LandingPage() {
                         setQuestions={setQuestions}
                     />
                     <Questions
+                        key="ambPersonal"
                         prefix="QApt"
                         array={"aptitudes"}
                         pagination={pageNumber}
@@ -61,6 +86,7 @@ function LandingPage() {
                         setQuestions={setQuestions}
                     />
                     <Questions
+                        key="personalidades"
                         prefix="QPer"
                         array={"personalidades"}
                         pagination={pageNumber}
@@ -69,6 +95,13 @@ function LandingPage() {
                         questions={questions.personalidades}
                         setQuestions={setQuestions}
                     />
+                    {pageNumber === totalPagination && (
+                        <div className="container_submit">
+                            <Button variant="contained" onClick={handleSubmit}>
+                                Calificar test
+                            </Button>
+                        </div>
+                    )}
                 </div>
                 <div className="pagination">
                     <Pagination
@@ -89,7 +122,7 @@ function LandingPage() {
                         }}
                     />
                 </div>
-            </div>
+            </form>
         </div>
     );
 }
