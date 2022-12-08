@@ -6,7 +6,9 @@ use App\Models\Carrera;
 use App\Models\QuestionEnvironment;
 use App\Models\QuestionIntelligence;
 use App\Models\QuestionRoute;
+use App\Models\Score;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class QuestionProcessing extends Controller
 {
@@ -49,11 +51,21 @@ return  compact('aptitudes', 'ambLaboral', 'personalidades');
         $aptitudes = self::mayorAptitud($request);
         $personalidades = self::mayorPersonalidad($request);
         $ambLaboral = self::mayorAmbLaboral($request);
-        // En caso de que no haya ninguna personalidad regresará nulo diciedo que no hay ninún match
-        // if (empty($personalidades) || $aptitudes || ambLaboral) {
-        //     $mensaje = true;
-        //     return redirect('/resultado')->with(compact('mensaje'));
-        // }
+        $usuario = null;
+        if (Auth::check()) {
+            $usuario = Auth::id();
+        }
+        // -----Poner código necesario para saber si se cuenta con un código de test para relacionarlo
+        // con un docente y que este pueda ver también sus resultados----- Prueba ;)
+        Score::create([
+            'ambLaboral' => $ambLaboral, 'aptitudes' => $aptitudes,
+            'personalidades' => $personalidades, 'user_id' => $usuario,
+        ]);
+        // En caso de que no haya ninguna personalidad regresará nulo diciedo que no hay ninguna coincidencia
+        if (empty($personalidades) || empty($aptitudes) || empty($ambLaboral)) {
+            $mensaje = true;
+            return redirect('/resultado')->with(compact('mensaje'));
+        }
         $carreras = self::buscarCarrera($personalidades, $ambLaboral, $aptitudes);
         return with(compact('carreras'));
     }
@@ -103,7 +115,7 @@ return  compact('aptitudes', 'ambLaboral', 'personalidades');
         //
     }
     // .................................................................
-    // Devolver un arreglo con los puntajes de un area
+    // Devolver un arreglo con los puntajes de un area dada
     // .................................................................
     public function puntajes($request, $tipo)
     {
